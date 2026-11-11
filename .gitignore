@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Secrets and private data
+.env
+.env.*
+!.env.example
+data/private/
+
+# Node and Next.js (the dashboard/ app)
+node_modules/
+.next/
+out/
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+npm-debug.log*
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# Local tooling: never tracked or pushed
+.claude
+.claude/
+.agent
+.agent/
+.agents
+.agents/
+skills-lock.json
+AGENTS.md
+CLAUDE.md

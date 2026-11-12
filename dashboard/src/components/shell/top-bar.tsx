@@ -1,7 +1,7 @@
 import { Brand } from "@/components/shell/brand";
 import { UserMenu } from "@/components/shell/user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { StatusDot } from "@/components/ui/status";
+import { FeedIndicator } from "@/components/vitals/feed-indicator";
 
 export function TopBar() {
   return (
@@ -13,10 +13,7 @@ export function TopBar() {
         </p>
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
-        <p className="hidden h-9 items-center gap-2 rounded-full border border-line bg-surface px-3 text-xs text-ink-muted sm:flex">
-          <StatusDot status="normal" />
-          Feed not connected
-        </p>
+        <FeedIndicator />
         <ThemeToggle />
         <UserMenu />
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Check, Minus, UserX } from "lucide-react";
+import { ArrowLeft, UserX } from "lucide-react";
 import Link from "next/link";
 import {
   Avatar,
@@ -9,20 +9,12 @@ import {
 } from "@/components/patients/patient-bits";
 import { button } from "@/components/ui/button";
 import { PlaceholderTile } from "@/components/ui/placeholder-tile";
-import { Tile, TileHeader } from "@/components/ui/tile";
+import { Tile } from "@/components/ui/tile";
+import { ReadingStatusTile } from "@/components/vitals/reading-status-tile";
+import { VitalTile } from "@/components/vitals/vital-tile";
 import { useCaseload } from "@/hooks/use-caseload";
 import { findPatientFor } from "@/lib/data/patients";
-import { RISK_LABEL, type Patient } from "@/lib/vitals/types";
-
-function monitoredVitals(patient: Patient) {
-  return [
-    { label: "Heart rate", unit: "bpm", monitored: true },
-    { label: "Blood oxygen (SpO2)", unit: "%", monitored: true },
-    { label: "Blood pressure", unit: "mmHg", monitored: true },
-    { label: "Body temperature", unit: "°C", monitored: true },
-    { label: "Blood glucose", unit: "mg/dL", monitored: patient.diabetic },
-  ];
-}
+import { RISK_LABEL } from "@/lib/vitals/types";
 
 function PatientUnavailable() {
   return (
@@ -58,10 +50,10 @@ export function PatientView({ patientId }: { patientId: string }) {
       className="grid grid-cols-1 gap-4 md:grid-cols-6 xl:grid-cols-12"
     >
       <Tile index={0} className="md:col-span-6 xl:col-span-8">
-        <div className="flex items-start gap-4">
+        <div className="flex flex-wrap items-start gap-4">
           <Avatar name={patient.name} size="lg" />
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-2xl font-semibold tracking-tight text-ink">
+            <h1 className="text-2xl font-semibold tracking-tight text-balance text-ink">
               {patient.name}
             </h1>
             <p className="mt-0.5 text-sm text-ink-muted">
@@ -69,7 +61,7 @@ export function PatientView({ patientId }: { patientId: string }) {
               years
             </p>
           </div>
-          <p className="flex h-8 shrink-0 items-center gap-2 rounded-full border border-line bg-inset px-3 text-xs font-medium text-ink-muted">
+          <p className="ml-auto flex h-8 shrink-0 items-center gap-2 rounded-full border border-line bg-inset px-3 text-xs font-medium text-ink-muted">
             <RiskBars level={patient.riskLevel} />
             {RISK_LABEL[patient.riskLevel]}
           </p>
@@ -94,45 +86,48 @@ export function PatientView({ patientId }: { patientId: string }) {
               </span>
             </dd>
           </div>
+          <div className="sm:col-span-2">
+            <dt className="text-xs font-medium tracking-wide text-ink-subtle uppercase">
+              Monitored vitals
+            </dt>
+            <dd className="mt-2">
+              <ConditionChips
+                conditions={[
+                  "Heart rate",
+                  "SpO2",
+                  "Blood pressure",
+                  "Temperature",
+                  ...(patient.diabetic ? ["Blood glucose"] : []),
+                ]}
+              />
+            </dd>
+          </div>
         </dl>
       </Tile>
-      <Tile index={1} className="md:col-span-6 xl:col-span-4">
-        <TileHeader title="Monitored vitals" />
-        <ul className="mt-3 space-y-2.5">
-          {monitoredVitals(patient).map((vital) => (
-            <li
-              key={vital.label}
-              className="flex items-center gap-2.5 text-sm"
-            >
-              {vital.monitored ? (
-                <Check className="size-4 text-accent" aria-hidden="true" />
-              ) : (
-                <Minus className="size-4 text-ink-subtle" aria-hidden="true" />
-              )}
-              <span className={vital.monitored ? "text-ink" : "text-ink-subtle"}>
-                {vital.label}
-              </span>
-              <span className="ml-auto text-xs text-ink-subtle">
-                {vital.monitored ? vital.unit : "Not monitored"}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </Tile>
-      <PlaceholderTile
-        index={2}
-        title="Live vitals"
-        note="Readings from this patient's sensors"
-        className="md:col-span-6 xl:col-span-8"
-      />
-      <PlaceholderTile
-        index={3}
-        title="Alerts"
-        note="Critical readings for this patient"
+      <ReadingStatusTile
+        patientId={patient.id}
+        index={1}
         className="md:col-span-6 xl:col-span-4"
       />
+      <VitalTile patientId={patient.id} vital="heartRate" index={2} className="md:col-span-3 xl:col-span-4" />
+      <VitalTile patientId={patient.id} vital="spo2" index={3} className="md:col-span-3 xl:col-span-4" />
+      <VitalTile patientId={patient.id} vital="systolicBp" index={4} className="md:col-span-3 xl:col-span-4" />
+      <VitalTile patientId={patient.id} vital="temperature" index={5} className="md:col-span-3 xl:col-span-4" />
+      <VitalTile
+        patientId={patient.id}
+        vital="glucose"
+        monitored={patient.diabetic}
+        index={6}
+        className="md:col-span-3 xl:col-span-4"
+      />
       <PlaceholderTile
-        index={4}
+        index={7}
+        title="Alerts"
+        note="Critical readings for this patient"
+        className="md:col-span-3 xl:col-span-4"
+      />
+      <PlaceholderTile
+        index={8}
         title="Trends"
         note="Each vital over time"
         className="md:col-span-6 xl:col-span-12"

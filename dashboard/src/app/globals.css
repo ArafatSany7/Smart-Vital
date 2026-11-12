@@ -145,6 +145,23 @@ body {
 }
 
 @layer components {
+  .critical-ring {
+    position: relative;
+  }
+
+  .critical-ring::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    box-shadow:
+      0 0 0 3px var(--critical-line),
+      0 0 24px -4px var(--critical-solid);
+    opacity: 0;
+    pointer-events: none;
+    animation: critical-ring 1.8s ease-in-out infinite;
+  }
+
   .ecg-trace {
     stroke-dasharray: 1;
     animation: ecg-draw 3.6s linear infinite;
@@ -164,6 +181,12 @@ body {
   100% {
     stroke-dashoffset: 0;
     opacity: 0;
+  }
+}
+
+@keyframes critical-ring {
+  50% {
+    opacity: 1;
   }
 }
 
@@ -194,6 +217,11 @@ body {
 
   .ecg-trace {
     animation: none;
+  }
+
+  .critical-ring::after {
+    animation: none;
+    opacity: 0.7;
   }
 
   .status-dot[data-pulse="true"]::after {

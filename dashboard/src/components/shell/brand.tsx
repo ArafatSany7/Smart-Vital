@@ -22,7 +22,7 @@ function BrandMark() {
         <span className="block text-sm font-semibold tracking-tight text-ink">
           Smart Vitals
         </span>
-        <span className="block text-xs text-ink-subtle">
+        <span className="hidden text-xs text-ink-subtle sm:block">
           MedLink Community Health
         </span>
       </span>

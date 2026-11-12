@@ -1,4 +1,5 @@
 import { CLINICIANS, createRoster } from "@/lib/vitals/roster";
+import type { SimulationProfile } from "@/lib/vitals/simulator";
 import type { Clinician, Patient, RiskLevel } from "@/lib/vitals/types";
 
 const roster = createRoster();
@@ -32,4 +33,8 @@ export function groupByRisk(patients: Patient[]): Record<RiskLevel, Patient[]> {
   const groups: Record<RiskLevel, Patient[]> = { high: [], medium: [], low: [] };
   for (const patient of patients) groups[patient.riskLevel].push(patient);
   return groups;
+}
+
+export function getSimulationProfile(patientId: string): SimulationProfile | null {
+  return roster.profiles.get(patientId) ?? null;
 }

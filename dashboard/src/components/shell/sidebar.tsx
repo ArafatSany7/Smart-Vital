@@ -7,9 +7,22 @@ import { usePathname } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 import { Avatar, RiskBars } from "@/components/patients/patient-bits";
 import { Brand } from "@/components/shell/brand";
+import { StatusDot } from "@/components/ui/status";
+import { usePatientStatus } from "@/hooks/use-patient-feed";
 import { useCaseload } from "@/hooks/use-caseload";
 import { cn } from "@/lib/cn";
 import { RISK_LABEL, RISK_ORDER } from "@/lib/vitals/types";
+
+function RowStatus({ patientId }: { patientId: string }) {
+  const status = usePatientStatus(patientId);
+  if (!status || status === "normal") return null;
+  return (
+    <span className="flex items-center pr-1.5" title={`Latest reading: ${status}`}>
+      <StatusDot status={status} />
+      <span className="sr-only">Latest reading {status}</span>
+    </span>
+  );
+}
 
 function SidebarLink({
   href,
@@ -117,6 +130,7 @@ function PatientNav() {
                           {patient.id}
                         </span>
                       </span>
+                      <RowStatus patientId={patient.id} />
                     </SidebarLink>
                   </li>
                 ))}

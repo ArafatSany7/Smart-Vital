@@ -17,7 +17,7 @@ import { formatAxisTime, type TrendVital } from "@/components/charts/chart-theme
 import { cn } from "@/lib/cn";
 import { formatClock, formatValue, VITAL_DISPLAY } from "@/lib/vitals/display";
 import type { HistoryEntry } from "@/lib/vitals/feed";
-import { DEFAULT_THRESHOLDS, scoreVital } from "@/lib/vitals/rules";
+import type { VitalLimits } from "@/lib/vitals/rules";
 import type { Status } from "@/lib/vitals/types";
 
 interface Row {
@@ -48,15 +48,14 @@ function toRows(history: HistoryEntry[], vital: TrendVital): Row[] {
       t: entry.reading.timestamp,
       v: value,
       d: vital === "systolicBp" ? entry.reading.diastolicBp : null,
-      status: value === null ? "normal" : scoreVital(vital, value).status,
+      status: value === null ? "normal" : entry.scores[vital] ?? "normal",
       late: entry.late,
       rejected: entry.rejected.includes(vital),
     };
   });
 }
 
-function domainFor(rows: Row[], vital: TrendVital): [number, number] {
-  const limits = DEFAULT_THRESHOLDS[vital];
+function domainFor(rows: Row[], vital: TrendVital, limits: VitalLimits): [number, number] {
   const values: number[] = [];
   for (const row of rows) {
     if (row.v !== null) values.push(row.v);
@@ -135,15 +134,22 @@ function ChartTooltip({
   );
 }
 
-export function HistoryChart({ vital, history }: { vital: TrendVital; history: HistoryEntry[] }) {
+export function HistoryChart({
+  vital,
+  history,
+  limits,
+}: {
+  vital: TrendVital;
+  history: HistoryEntry[];
+  limits: VitalLimits;
+}) {
   const lineCount = vital === "systolicBp" ? 2 : 1;
   const [finished, setFinished] = useState(0);
   const animate = finished < lineCount;
   const onLineDrawn = () => setFinished((count) => count + 1);
   const rows = toRows(history, vital);
-  const limits = DEFAULT_THRESHOLDS[vital];
   const display = VITAL_DISPLAY[vital];
-  const [yMin, yMax] = domainFor(rows, vital);
+  const [yMin, yMax] = domainFor(rows, vital, limits);
   const bandLow = limits.mildLow ?? limits.severeLow ?? yMin;
   const bandHigh = limits.mildHigh ?? limits.severeHigh ?? yMax;
   const tick = { fill: "var(--ink-subtle)", fontSize: 12 };

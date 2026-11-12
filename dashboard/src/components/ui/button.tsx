@@ -6,7 +6,7 @@ export const button = cva(
   [
     "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-2",
     "rounded-xl text-sm font-medium whitespace-nowrap",
-    "transition-[transform,background-color,border-color,color] duration-150 ease-out-strong",
+    "transition-[transform,translate,scale,background-color,border-color,color] duration-150 ease-out-strong",
     "active:scale-[0.97]",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
     "disabled:pointer-events-none disabled:opacity-50",

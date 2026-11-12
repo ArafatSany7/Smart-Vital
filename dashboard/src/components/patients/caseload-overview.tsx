@@ -140,7 +140,7 @@ function PatientCard({ patient, index }: { patient: Patient; index: number }) {
       style={{ "--i": Math.min(index, 8) } as CSSProperties}
       className={cn(
         "tile-enter flex flex-col gap-4 rounded-tile border border-line bg-surface p-4 shadow-tile",
-        "transition-[transform,border-color] duration-150 ease-out-strong",
+        "transition-[transform,translate,scale,border-color] duration-150 ease-out-strong",
         "hover:border-line-strong active:scale-[0.98]",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         tone,

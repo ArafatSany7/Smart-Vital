@@ -28,7 +28,10 @@ function subscribe(listener: () => void) {
 export function useNow(): number {
   return useSyncExternalStore(
     subscribe,
-    () => current || Date.now(),
+    () => {
+      if (current === 0) current = Date.now();
+      return current;
+    },
     () => 0,
   );
 }

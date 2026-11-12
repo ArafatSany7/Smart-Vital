@@ -10,7 +10,7 @@ import { Tile } from "@/components/ui/tile";
 import { usePatientFeed } from "@/hooks/use-patient-feed";
 import { cn } from "@/lib/cn";
 import { formatValue, VITAL_DISPLAY } from "@/lib/vitals/display";
-import { DEFAULT_THRESHOLDS } from "@/lib/vitals/rules";
+import { usePatientThresholds } from "@/stores/thresholds";
 
 const LiveChart = dynamic(() => import("@/components/charts/live-chart"), {
   ssr: false,
@@ -44,7 +44,8 @@ export function TrendsTile({
   const { feed, paused } = usePatientFeed(patientId);
   const history = feed?.history ?? [];
   const display = VITAL_DISPLAY[vital];
-  const limits = DEFAULT_THRESHOLDS[vital];
+  const thresholds = usePatientThresholds(patientId);
+  const limits = thresholds[vital];
   const severe = [
     limits.severeLow !== undefined ? `below ${formatValue(limits.severeLow, display.decimals)}` : null,
     limits.severeHigh !== undefined ? `above ${formatValue(limits.severeHigh, display.decimals)}` : null,
@@ -105,9 +106,9 @@ export function TrendsTile({
             transition={{ duration: 0.15, ease: "easeOut" }}
           >
             {mode === "live" ? (
-              <LiveChart vital={vital} history={history} paused={paused} />
+              <LiveChart vital={vital} history={history} paused={paused} limits={limits} />
             ) : (
-              <HistoryChart vital={vital} history={history} />
+              <HistoryChart vital={vital} history={history} limits={limits} />
             )}
           </motion.div>
         </AnimatePresence>

@@ -9,7 +9,6 @@ import { usePatientFeed } from "@/hooks/use-patient-feed";
 import { cn } from "@/lib/cn";
 import { formatClock, formatValue, VITAL_DISPLAY } from "@/lib/vitals/display";
 import type { HistoryEntry } from "@/lib/vitals/feed";
-import { scoreVital } from "@/lib/vitals/rules";
 import type { ScoredVitalKey, VitalKey } from "@/lib/vitals/types";
 
 const PAGE = 40;
@@ -81,7 +80,7 @@ function ValueCell({ entry, vital }: { entry: HistoryEntry; vital: ScoredVitalKe
   if (value === null) {
     return <td className="px-3 py-2 text-right text-ink-subtle">—</td>;
   }
-  const status = scoreVital(vital, value).status;
+  const status = entry.scores[vital] ?? "normal";
   return (
     <td className={cn("numeric px-3 py-2 text-right whitespace-nowrap text-ink", cellTone[status])}>
       {formatValue(value, display.decimals)}

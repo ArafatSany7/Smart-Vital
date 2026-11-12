@@ -20,7 +20,7 @@ export function UserMenu() {
       <Menu.Trigger
         className={cn(
           "flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-line-strong bg-surface pr-2.5 pl-1.5",
-          "transition-[transform,background-color] duration-150 ease-out-strong",
+          "transition-[transform,translate,scale,background-color] duration-150 ease-out-strong",
           "hover:bg-inset active:scale-[0.97]",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         )}
@@ -37,7 +37,7 @@ export function UserMenu() {
           <Menu.Popup
             className={cn(
               "min-w-64 rounded-2xl border border-line bg-surface p-1.5 shadow-tile outline-none",
-              "origin-(--transform-origin) transition-[transform,opacity] duration-150 ease-out-strong",
+              "origin-(--transform-origin) transition-[transform,translate,scale,opacity] duration-150 ease-out-strong",
               "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
               "data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[ending-style]:duration-100",
             )}

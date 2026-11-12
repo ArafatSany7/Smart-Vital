@@ -183,7 +183,7 @@ export function LoginScreen() {
                     }}
                     className={cn(
                       "flex w-full cursor-pointer items-center gap-3 rounded-xl border border-line bg-surface p-2.5 text-left",
-                      "transition-[transform,border-color,background-color] duration-150 ease-out-strong",
+                      "transition-[transform,translate,scale,border-color,background-color] duration-150 ease-out-strong",
                       "hover:border-line-strong hover:bg-inset active:scale-[0.98]",
                       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                     )}

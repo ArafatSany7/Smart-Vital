@@ -10,13 +10,31 @@ import {
 import { button } from "@/components/ui/button";
 import { ReadingLog } from "@/components/charts/reading-log";
 import { TrendsTile } from "@/components/charts/trends-tile";
-import { PlaceholderTile } from "@/components/ui/placeholder-tile";
+import { AlertsTile } from "@/components/alerts/alerts-tile";
+import { ThresholdDialog } from "@/components/thresholds/threshold-dialog";
 import { Tile } from "@/components/ui/tile";
 import { ReadingStatusTile } from "@/components/vitals/reading-status-tile";
 import { VitalTile } from "@/components/vitals/vital-tile";
 import { useCaseload } from "@/hooks/use-caseload";
 import { findPatientFor } from "@/lib/data/patients";
+import { formatClock, VITAL_DISPLAY } from "@/lib/vitals/display";
+import { changedVitals } from "@/lib/vitals/threshold-editor";
 import { RISK_LABEL } from "@/lib/vitals/types";
+import { useThresholdOverride } from "@/stores/thresholds";
+
+function CustomThresholdChip({ patientId }: { patientId: string }) {
+  const override = useThresholdOverride(patientId);
+  if (!override) return null;
+  const changed = changedVitals(override.thresholds).map((vital) => VITAL_DISPLAY[vital].shortLabel);
+  return (
+    <p
+      className="flex h-8 items-center rounded-full border border-accent/40 bg-accent/10 px-3 text-xs font-medium text-accent"
+      title={`Set by ${override.updatedBy} at ${formatClock(override.updatedAt)}`}
+    >
+      Custom thresholds: {changed.join(", ")}
+    </p>
+  );
+}
 
 function PatientUnavailable() {
   return (
@@ -63,10 +81,14 @@ export function PatientView({ patientId }: { patientId: string }) {
               years
             </p>
           </div>
-          <p className="ml-auto flex h-8 shrink-0 items-center gap-2 rounded-full border border-line bg-inset px-3 text-xs font-medium text-ink-muted">
-            <RiskBars level={patient.riskLevel} />
-            {RISK_LABEL[patient.riskLevel]}
-          </p>
+          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <p className="flex h-8 items-center gap-2 rounded-full border border-line bg-inset px-3 text-xs font-medium text-ink-muted">
+              <RiskBars level={patient.riskLevel} />
+              {RISK_LABEL[patient.riskLevel]}
+            </p>
+            <CustomThresholdChip patientId={patient.id} />
+            <ThresholdDialog patient={patient} />
+          </div>
         </div>
         <dl className="mt-6 grid gap-5 sm:grid-cols-2">
           <div>
@@ -122,10 +144,9 @@ export function PatientView({ patientId }: { patientId: string }) {
         index={6}
         className="md:col-span-3 xl:col-span-4"
       />
-      <PlaceholderTile
+      <AlertsTile
+        patientId={patient.id}
         index={7}
-        title="Alerts"
-        note="Critical readings for this patient"
         className="md:col-span-3 xl:col-span-4"
       />
       <TrendsTile

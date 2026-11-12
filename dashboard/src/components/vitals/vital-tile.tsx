@@ -9,7 +9,7 @@ import { Tile } from "@/components/ui/tile";
 import { usePatientFeed } from "@/hooks/use-patient-feed";
 import { cn } from "@/lib/cn";
 import { formatAgo, formatValue, normalRange, VITAL_DISPLAY } from "@/lib/vitals/display";
-import { DEFAULT_THRESHOLDS } from "@/lib/vitals/rules";
+import { usePatientThresholds } from "@/stores/thresholds";
 import type { ScoredVitalKey, Status } from "@/lib/vitals/types";
 
 const ICONS: Record<ScoredVitalKey, ComponentType<SVGProps<SVGSVGElement>>> = {
@@ -50,7 +50,7 @@ export function VitalTile({
   const display = VITAL_DISPLAY[vital];
   const Icon = ICONS[vital];
   const { feed, health, now } = usePatientFeed(patientId);
-  const limits = DEFAULT_THRESHOLDS[vital];
+  const limits = usePatientThresholds(patientId)[vital];
   const isBp = vital === "systolicBp";
 
   const header = (status: Status | null) => (

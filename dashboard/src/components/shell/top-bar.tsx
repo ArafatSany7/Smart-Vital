@@ -1,3 +1,4 @@
+import { AlertBell } from "@/components/alerts/alert-bell";
 import { Brand } from "@/components/shell/brand";
 import { UserMenu } from "@/components/shell/user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -14,6 +15,7 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
         <FeedIndicator />
+        <AlertBell />
         <ThemeToggle />
         <UserMenu />
       </div>

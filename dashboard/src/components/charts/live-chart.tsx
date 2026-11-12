@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CANVAS_COLORS, type TrendVital } from "@/components/charts/chart-theme";
 import { formatClock, formatValue, VITAL_DISPLAY } from "@/lib/vitals/display";
 import type { HistoryEntry } from "@/lib/vitals/feed";
-import { DEFAULT_THRESHOLDS } from "@/lib/vitals/rules";
+import type { VitalLimits } from "@/lib/vitals/rules";
 
 const WINDOWS = [
   { label: "1 min", secs: 60 },
@@ -23,8 +23,7 @@ function points(history: HistoryEntry[], pick: (entry: HistoryEntry) => number |
   return out;
 }
 
-function referenceFor(vital: TrendVital, decimals: number) {
-  const limits = DEFAULT_THRESHOLDS[vital];
+function referenceFor(limits: VitalLimits, decimals: number) {
   if (limits.mildHigh !== undefined) {
     return { value: limits.mildHigh, label: `Warning above ${formatValue(limits.mildHigh, decimals)}` };
   }
@@ -38,10 +37,12 @@ export default function LiveChart({
   vital,
   history,
   paused,
+  limits,
 }: {
   vital: TrendVital;
   history: HistoryEntry[];
   paused: boolean;
+  limits: VitalLimits;
 }) {
   const { resolvedTheme } = useTheme();
   const theme: "light" | "dark" = resolvedTheme === "light" ? "light" : "dark";
@@ -93,7 +94,7 @@ export default function LiveChart({
       fill
       badge
       badgeVariant="minimal"
-      referenceLine={referenceFor(vital, display.decimals)}
+      referenceLine={referenceFor(limits, display.decimals)}
     />
   );
 }

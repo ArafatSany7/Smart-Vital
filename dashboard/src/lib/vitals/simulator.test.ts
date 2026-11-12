@@ -84,6 +84,27 @@ describe("generateReading", () => {
     expect(high).toBeGreaterThan(medium);
   });
 
+  it("keeps a patient unwell for a whole deterioration spell", () => {
+    const rng = new Rng(4);
+    const profile = profileFor("medium");
+    const readings = Array.from({ length: 200 }, (_, index) =>
+      generateReading(profile, rng, index * 60_000, 1.4),
+    );
+    expect(share(readings, (r) => classifyReading(r).status === "critical")).toBeGreaterThan(0.6);
+  });
+
+  it("matches the notebook's distribution when no severity is given", () => {
+    const profile = profileFor("low");
+    expect(manyReadings(profile, 300, 8)).toEqual(
+      (() => {
+        const rng = new Rng(8);
+        return Array.from({ length: 300 }, (_, index) =>
+          generateReading(profile, rng, index * 60_000, 0),
+        );
+      })(),
+    );
+  });
+
   it("produces all three statuses, with Critical the rarest", () => {
     const readings = manyReadings(profileFor("high", true), 8000);
     const statusShare = (status: string) =>

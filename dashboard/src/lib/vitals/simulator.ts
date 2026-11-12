@@ -35,11 +35,12 @@ export function generateReading(
   profile: SimulationProfile,
   rng: Rng,
   timestamp: number,
+  severity = 0,
 ): Reading {
   const risk = RISK_SCORE[profile.riskLevel];
 
   const unwell = rng.next() < 0.1 * risk + 0.06;
-  const k = unwell ? rng.uniform(0.15, 1.5) : 0;
+  const k = Math.max(unwell ? rng.uniform(0.15, 1.5) : 0, severity);
 
   const heartRate =
     profile.baseHeartRate + rng.normal(0, 6) + k * rng.choice([-22, 38]);

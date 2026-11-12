@@ -39,7 +39,7 @@ function SidebarLink({
       aria-current={active ? "page" : undefined}
       className={cn(
         "relative flex h-12 items-center gap-3 rounded-xl px-2",
-        "transition-[transform,background-color] duration-150 ease-out-strong",
+        "transition-[transform,translate,scale,background-color] duration-150 ease-out-strong",
         "active:scale-[0.98]",
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
         !active && "hover:bg-inset/60",

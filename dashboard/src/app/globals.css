@@ -162,6 +162,10 @@ body {
     animation: critical-ring 1.8s ease-in-out infinite;
   }
 
+  [data-sonner-toast][data-expanded="false"][data-front="false"] > * {
+    opacity: 0;
+  }
+
   .log-row {
     transition: background-color 900ms ease;
 

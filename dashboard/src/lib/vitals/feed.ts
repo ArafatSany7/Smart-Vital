@@ -4,7 +4,7 @@ import {
   type Classification,
   type Thresholds,
 } from "./rules";
-import type { Reading, Status, VitalKey } from "./types";
+import type { Reading, ScoredVitalKey, Status, VitalKey } from "./types";
 import { validateReading, VITAL_KEYS } from "./validate";
 
 export const HISTORY_LIMIT = 600;
@@ -20,6 +20,7 @@ export interface HistoryEntry {
   points: number;
   rejected: VitalKey[];
   late: boolean;
+  scores: Partial<Record<ScoredVitalKey, Status>>;
 }
 
 export interface PatientFeed {
@@ -76,12 +77,17 @@ export function ingest(
   const { reading, rejected } = validateReading(incoming);
   const isLate = feed.latest !== null && reading.timestamp < feed.latest.timestamp;
   const classification = classifyReading(reading, thresholds);
+  const scores: Partial<Record<ScoredVitalKey, Status>> = {};
+  for (const vital of classification.vitals) {
+    if (vital.value !== null) scores[vital.key] = vital.status;
+  }
   const history = insertSorted(feed.history, {
     reading,
     status: classification.status,
     points: classification.points,
     rejected,
     late: isLate,
+    scores,
   });
 
   const base: PatientFeed = {
@@ -112,6 +118,11 @@ export function ingest(
     },
     outcome: "accepted",
   };
+}
+
+export function reclassifyLatest(feed: PatientFeed, thresholds: Thresholds): PatientFeed {
+  if (!feed.latest) return feed;
+  return { ...feed, classification: classifyReading(feed.latest, thresholds) };
 }
 
 export type FeedHealth = "waiting" | "live" | "delayed" | "offline";

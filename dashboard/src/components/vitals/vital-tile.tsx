@@ -83,7 +83,7 @@ export function VitalTile({
   const stale = health === "delayed" || health === "offline";
   const rejected = feed?.latestRejected.includes(vital) ?? false;
   const lastKnown = feed?.lastValues[vital];
-  const history = (feed?.history ?? []).slice(-SPARK_POINTS).map((reading) => reading[vital]);
+  const history = (feed?.history ?? []).slice(-SPARK_POINTS).map((entry) => entry.reading[vital]);
 
   return (
     <Tile

@@ -8,6 +8,8 @@ import {
   RiskBars,
 } from "@/components/patients/patient-bits";
 import { button } from "@/components/ui/button";
+import { ReadingLog } from "@/components/charts/reading-log";
+import { TrendsTile } from "@/components/charts/trends-tile";
 import { PlaceholderTile } from "@/components/ui/placeholder-tile";
 import { Tile } from "@/components/ui/tile";
 import { ReadingStatusTile } from "@/components/vitals/reading-status-tile";
@@ -126,10 +128,16 @@ export function PatientView({ patientId }: { patientId: string }) {
         note="Critical readings for this patient"
         className="md:col-span-3 xl:col-span-4"
       />
-      <PlaceholderTile
+      <TrendsTile
+        patientId={patient.id}
+        diabetic={patient.diabetic}
         index={8}
-        title="Trends"
-        note="Each vital over time"
+        className="md:col-span-6 xl:col-span-12"
+      />
+      <ReadingLog
+        patientId={patient.id}
+        diabetic={patient.diabetic}
+        index={9}
         className="md:col-span-6 xl:col-span-12"
       />
     </div>

@@ -6,7 +6,7 @@ import { Rng } from "@/lib/vitals/random";
 import { generateReading, type SimulationProfile } from "@/lib/vitals/simulator";
 
 export const FEED_INTERVAL_MS = 3000;
-const BACKFILL_READINGS = 40;
+const BACKFILL_READINGS = 200;
 
 interface Sensor {
   profile: SimulationProfile;

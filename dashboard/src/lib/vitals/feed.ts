@@ -4,18 +4,26 @@ import {
   type Classification,
   type Thresholds,
 } from "./rules";
-import type { Reading, VitalKey } from "./types";
+import type { Reading, Status, VitalKey } from "./types";
 import { validateReading, VITAL_KEYS } from "./validate";
 
-export const HISTORY_LIMIT = 240;
+export const HISTORY_LIMIT = 600;
 
 export interface LastValue {
   value: number;
   at: number;
 }
 
+export interface HistoryEntry {
+  reading: Reading;
+  status: Status;
+  points: number;
+  rejected: VitalKey[];
+  late: boolean;
+}
+
 export interface PatientFeed {
-  history: Reading[];
+  history: HistoryEntry[];
   latest: Reading | null;
   classification: Classification | null;
   lastValues: Partial<Record<VitalKey, LastValue>>;
@@ -44,11 +52,11 @@ export function emptyFeed(): PatientFeed {
   };
 }
 
-function insertSorted(history: Reading[], reading: Reading): Reading[] {
+function insertSorted(history: HistoryEntry[], entry: HistoryEntry): HistoryEntry[] {
   const next = [...history];
   let index = next.length;
-  while (index > 0 && next[index - 1].timestamp > reading.timestamp) index -= 1;
-  next.splice(index, 0, reading);
+  while (index > 0 && next[index - 1].reading.timestamp > entry.reading.timestamp) index -= 1;
+  next.splice(index, 0, entry);
   return next.length > HISTORY_LIMIT ? next.slice(next.length - HISTORY_LIMIT) : next;
 }
 
@@ -58,7 +66,7 @@ export function ingest(
   receivedAt: number,
   thresholds: Thresholds = DEFAULT_THRESHOLDS,
 ): { feed: PatientFeed; outcome: IngestOutcome } {
-  if (feed.history.some((reading) => reading.timestamp === incoming.timestamp)) {
+  if (feed.history.some((entry) => entry.reading.timestamp === incoming.timestamp)) {
     return {
       feed: { ...feed, duplicates: feed.duplicates + 1, lastReceivedAt: receivedAt },
       outcome: "duplicate",
@@ -67,7 +75,14 @@ export function ingest(
 
   const { reading, rejected } = validateReading(incoming);
   const isLate = feed.latest !== null && reading.timestamp < feed.latest.timestamp;
-  const history = insertSorted(feed.history, reading);
+  const classification = classifyReading(reading, thresholds);
+  const history = insertSorted(feed.history, {
+    reading,
+    status: classification.status,
+    points: classification.points,
+    rejected,
+    late: isLate,
+  });
 
   const base: PatientFeed = {
     ...feed,
@@ -93,7 +108,7 @@ export function ingest(
       latest: reading,
       latestRejected: rejected,
       lastValues,
-      classification: classifyReading(reading, thresholds),
+      classification,
     },
     outcome: "accepted",
   };

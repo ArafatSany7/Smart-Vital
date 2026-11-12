@@ -73,7 +73,9 @@ describe("ingest", () => {
     const current = feedOf(reading(1000), reading(3000));
     const { feed, outcome } = ingest(current, reading(2000, { spo2: 85 }), 3500);
     expect(outcome).toBe("late");
-    expect(feed.history.map((r) => r.timestamp)).toEqual([1000, 2000, 3000]);
+    expect(feed.history.map((entry) => entry.reading.timestamp)).toEqual([1000, 2000, 3000]);
+    expect(feed.history.map((entry) => entry.late)).toEqual([false, true, false]);
+    expect(feed.history[1].status).toBe("critical");
     expect(feed.latest?.timestamp).toBe(3000);
     expect(feed.classification?.status).toBe("normal");
   });

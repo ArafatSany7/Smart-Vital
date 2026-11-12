@@ -162,6 +162,14 @@ body {
     animation: critical-ring 1.8s ease-in-out infinite;
   }
 
+  .log-row {
+    transition: background-color 900ms ease;
+
+    @starting-style {
+      background-color: var(--accent-glow);
+    }
+  }
+
   .ecg-trace {
     stroke-dasharray: 1;
     animation: ecg-draw 3.6s linear infinite;

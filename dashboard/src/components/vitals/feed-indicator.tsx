@@ -15,11 +15,11 @@ export function FeedIndicator() {
     <div className="flex items-center gap-1">
       <p
         className={cn(
-          "hidden h-9 items-center gap-2 rounded-full border border-line bg-surface px-3 text-xs text-ink-muted sm:flex",
+          "hidden h-9 items-center gap-2 rounded-full border border-line bg-inset px-3 text-xs text-ink-muted sm:flex",
         )}
         aria-live="polite"
       >
-        <StatusDot status="normal" className={running && connected ? "text-accent" : "text-ink-subtle"} />
+        <StatusDot status="normal" muted={!(running && connected)} />
         {!connected
           ? "Connecting…"
           : running

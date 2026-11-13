@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { PageTransition } from "@/components/page-transition";
 import { PatientView } from "@/components/patients/patient-view";
 
 export default function PatientPage({
@@ -7,7 +8,9 @@ export default function PatientPage({
   return (
     <Suspense fallback={null}>
       {params.then(({ patientId }) => (
-        <PatientView patientId={patientId} />
+        <PageTransition id={patientId}>
+          <PatientView patientId={patientId} />
+        </PageTransition>
       ))}
     </Suspense>
   );

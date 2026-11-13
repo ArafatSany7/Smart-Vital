@@ -48,7 +48,7 @@ function SidebarLink({
       {active ? (
         <motion.span
           layoutId="sidebar-active"
-          className="absolute inset-0 rounded-xl border border-line bg-inset"
+          className="absolute inset-0 rounded-xl border border-accent/25 bg-accent/10"
           transition={{ type: "spring", duration: 0.25, bounce: 0 }}
         />
       ) : null}
@@ -61,9 +61,9 @@ function SidebarLink({
 
 export function Sidebar() {
   return (
-    <aside className="sticky top-0 hidden h-dvh w-72 shrink-0 flex-col border-r border-line bg-surface/70 lg:flex">
+    <aside className="sticky top-0 hidden h-dvh w-72 shrink-0 flex-col glass-panel border-r border-line lg:flex">
       <div className="flex h-16 shrink-0 items-center px-5">
-        <Brand href="/" />
+        <Brand href="/dashboard" />
       </div>
       <Suspense fallback={<div className="flex-1" />}>
         <PatientNav />
@@ -86,7 +86,7 @@ function PatientNav() {
         aria-label="Your patients"
         className="flex-1 space-y-5 overflow-y-auto px-3 pt-2 pb-4"
       >
-        <SidebarLink href="/" active={pathname === "/"}>
+        <SidebarLink href="/dashboard" active={pathname === "/dashboard"}>
           <span className="flex size-9 shrink-0 items-center justify-center text-ink-muted">
             <LayoutGrid className="size-[18px]" aria-hidden="true" />
           </span>

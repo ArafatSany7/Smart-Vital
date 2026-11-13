@@ -3,13 +3,15 @@ import { cn } from "@/lib/cn";
 
 type TileProps = HTMLAttributes<HTMLElement> & {
   index?: number;
+  glass?: boolean;
 };
 
-export function Tile({ index = 0, className, style, ...props }: TileProps) {
+export function Tile({ index = 0, glass = true, className, style, ...props }: TileProps) {
   return (
     <section
       className={cn(
-        "tile-enter rounded-tile border border-line bg-surface p-5 shadow-tile",
+        glass && "glass",
+        "tile-enter rounded-tile border border-line p-5",
         className,
       )}
       style={{ "--i": index, ...style } as CSSProperties}
@@ -29,7 +31,7 @@ export function TileHeader({
 }) {
   return (
     <header className={cn("flex items-baseline justify-between gap-3", className)}>
-      <h2 className="text-sm font-medium text-ink">{title}</h2>
+      <h2 className="font-mono text-[11px] tracking-[0.16em] text-ink-muted uppercase">{title}</h2>
       {hint ? <p className="text-xs text-ink-subtle">{hint}</p> : null}
     </header>
   );

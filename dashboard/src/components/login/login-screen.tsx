@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   useEffect,
@@ -13,6 +14,7 @@ import { EcgLine } from "@/components/login/ecg-line";
 import { Avatar } from "@/components/patients/patient-bits";
 import { Brand } from "@/components/shell/brand";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SectionLabel } from "@/components/ui/section-label";
 import { Button, button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { useHydrated } from "@/hooks/use-hydrated";
@@ -46,7 +48,7 @@ export function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (alreadySignedIn) router.replace("/");
+    if (alreadySignedIn) router.replace("/dashboard");
   }, [alreadySignedIn, router]);
 
   useLayoutEffect(() => {
@@ -66,24 +68,25 @@ export function LoginScreen() {
 
   return (
     <main className="grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
-      <section className="relative hidden flex-col justify-between overflow-hidden border-r border-line bg-surface/60 p-10 lg:flex">
+      <section className="relative hidden flex-col justify-between overflow-hidden glass-panel border-r border-line p-10 lg:flex">
         <Brand />
         <div>
           <EcgLine className="w-full max-w-xl" />
-          <h2 className="mt-8 max-w-md text-3xl font-semibold tracking-tight text-balance text-ink">
+          <SectionLabel index="00" className="mt-10">Clinician access</SectionLabel>
+          <h2 className="mt-5 max-w-lg text-4xl leading-[1.05] font-semibold tracking-[-0.03em] text-balance text-ink">
             Remote monitoring for the patients in your care.
           </h2>
-          <ul className="mt-6 space-y-3">
-            {POINTS.map((point) => (
+          <ol className="mt-8 border-t border-line">
+            {POINTS.map((point, index) => (
               <li
                 key={point}
-                className="flex items-center gap-3 text-sm text-ink-muted"
+                className="flex items-center gap-5 border-b border-line py-3.5 text-sm text-ink-muted"
               >
-                <span className="size-1.5 shrink-0 rounded-full bg-accent" />
+                <span className="font-mono text-xs text-l-clay">{String(index + 1).padStart(2, "0")}</span>
                 {point}
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
         <p className="flex items-center gap-2 text-xs text-ink-subtle">
           <ShieldCheck className="size-4 shrink-0" aria-hidden="true" />
@@ -97,7 +100,14 @@ export function LoginScreen() {
         </div>
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-10">
           <div className="tile-enter" style={enter(0)}>
-            <h1 className="text-2xl font-semibold tracking-tight text-ink">
+            <Link
+              href="/"
+              className="group mb-8 inline-flex h-9 items-center gap-2 rounded-lg text-sm text-ink-muted transition-colors duration-200 hover:text-ink"
+            >
+              <span aria-hidden="true" className="arrow-nudge arrow-nudge-back">←</span>
+              Back to Smart Vitals
+            </Link>
+            <h1 className="text-4xl font-semibold tracking-[-0.03em] text-ink">
               Sign in
             </h1>
             <p className="mt-1 text-sm text-ink-muted">
@@ -182,9 +192,9 @@ export function LoginScreen() {
                       setError(null);
                     }}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-3 rounded-xl border border-line bg-surface p-2.5 text-left",
+                      "flex w-full cursor-pointer items-center gap-3 rounded-xl border border-line bg-glass p-2.5 text-left backdrop-blur-md",
                       "transition-[transform,translate,scale,border-color,background-color] duration-150 ease-out-strong",
-                      "hover:border-line-strong hover:bg-inset active:scale-[0.98]",
+                      "hover:border-accent/40 hover:bg-surface/80 active:scale-[0.98]",
                       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
                     )}
                   >

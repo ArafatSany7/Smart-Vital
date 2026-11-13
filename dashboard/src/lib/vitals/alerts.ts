@@ -1,7 +1,7 @@
 import type { Classification } from "./rules";
 import type { Reading, ScoredVitalKey } from "./types";
 
-export const RESOLVE_AFTER_CALM_READINGS = 3;
+export const RESOLVE_AFTER_NORMAL_READINGS = 3;
 export const ESCALATE_AFTER_MS = 45_000;
 
 export interface AlertVital {
@@ -116,8 +116,13 @@ export function processReading(
   const triggerPresent = open.trigger.every((vital) => reading[vital.key] !== null);
   if (!triggerPresent) return { alerts, tracker, event: null };
 
+  if (classification.status !== "normal") {
+    if (tracker.calmStreak === 0) return { alerts, tracker, event: null };
+    return { alerts, tracker: { ...tracker, calmStreak: 0 }, event: null };
+  }
+
   const calmStreak = tracker.calmStreak + 1;
-  if (calmStreak < RESOLVE_AFTER_CALM_READINGS) {
+  if (calmStreak < RESOLVE_AFTER_NORMAL_READINGS) {
     return { alerts, tracker: { ...tracker, calmStreak }, event: null };
   }
 

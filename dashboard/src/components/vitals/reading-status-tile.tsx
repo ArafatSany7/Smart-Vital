@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, OctagonAlert, TriangleAlert } from "lucide-react";
+import { statusMark } from "@/components/ui/status";
 import { Tile, TileHeader } from "@/components/ui/tile";
 import { FeedHealthChip } from "@/components/vitals/feed-health";
 import { statusSurface } from "@/components/vitals/vital-tile";
@@ -10,10 +11,10 @@ import { formatAgo, formatClock, formatValue, VITAL_DISPLAY } from "@/lib/vitals
 import { CRITICAL_POINTS } from "@/lib/vitals/rules";
 import type { Status } from "@/lib/vitals/types";
 
-const HEADLINE: Record<Status, { label: string; Icon: typeof Check; tone: string }> = {
-  normal: { label: "Normal", Icon: Check, tone: "text-ink" },
-  warning: { label: "Warning", Icon: TriangleAlert, tone: "text-warning" },
-  critical: { label: "Critical", Icon: OctagonAlert, tone: "text-critical" },
+const HEADLINE: Record<Status, { label: string; Icon: typeof Check }> = {
+  normal: { label: "Normal", Icon: Check },
+  warning: { label: "Warning", Icon: TriangleAlert },
+  critical: { label: "Critical", Icon: OctagonAlert },
 };
 
 export function ReadingStatusTile({
@@ -30,7 +31,7 @@ export function ReadingStatusTile({
   const classification = feed?.classification ?? null;
   const stale = health === "delayed" || health === "offline";
   const status = classification?.status ?? "normal";
-  const { label, Icon, tone } = HEADLINE[status];
+  const { label, Icon } = HEADLINE[status];
   const drivers = classification?.vitals.filter((vital) => vital.points > 0) ?? [];
 
   return (
@@ -38,7 +39,7 @@ export function ReadingStatusTile({
       index={index}
       aria-label="Latest reading status"
       className={cn(
-        "flex flex-col transition-[background-color,border-color] duration-300 ease-out",
+        "flex flex-col transition-[background-color,border-color,box-shadow] duration-300 ease-out",
         latest && !stale && statusSurface[status],
         className,
       )}
@@ -47,9 +48,11 @@ export function ReadingStatusTile({
 
       {latest && classification ? (
         <>
-          <p className={cn("mt-4 flex items-center gap-2.5 text-3xl font-semibold tracking-tight", tone, stale && "opacity-50")}>
-            <Icon className="size-7" aria-hidden="true" />
-            {label}
+          <p className={cn("mt-4 flex items-center gap-2.5 text-3xl font-semibold tracking-tight", stale && "opacity-50")}>
+            <Icon className={cn("size-7", statusMark[status])} aria-hidden="true" />
+            <span data-status={status} className="metric">
+              {label}
+            </span>
           </p>
           <p className="mt-1 text-sm text-ink-muted">
             {classification.points} point{classification.points === 1 ? "" : "s"} · Critical at{" "}

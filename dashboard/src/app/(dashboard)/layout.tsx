@@ -7,8 +7,8 @@ export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
     <AuthGate>
       <FeedEngine />
-      <AlertNotifier />
       <AppShell>{children}</AppShell>
+      <AlertNotifier />
     </AuthGate>
   );
 }

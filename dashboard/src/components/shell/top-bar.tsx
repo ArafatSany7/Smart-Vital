@@ -6,9 +6,9 @@ import { FeedIndicator } from "@/components/vitals/feed-indicator";
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-line bg-canvas/80 px-4 backdrop-blur-md sm:px-6">
+    <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 glass-panel border-b border-line px-4 sm:px-6">
       <div className="flex min-w-0 items-center">
-        <Brand href="/" className="lg:hidden" />
+        <Brand href="/dashboard" compact className="lg:hidden" />
         <p className="hidden text-sm text-ink-muted lg:block">
           Clinician dashboard
         </p>

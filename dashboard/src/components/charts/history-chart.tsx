@@ -30,13 +30,13 @@ interface Row {
 }
 
 const STATUS_FILL: Record<Status, string> = {
-  normal: "var(--ink-subtle)",
+  normal: "var(--normal-solid)",
   warning: "var(--warning-solid)",
   critical: "var(--critical-solid)",
 };
 
 const STATUS_META: Record<Status, { label: string; Icon: typeof Check; tone: string }> = {
-  normal: { label: "Normal", Icon: Check, tone: "text-ink-muted" },
+  normal: { label: "Normal", Icon: Check, tone: "text-normal" },
   warning: { label: "Warning", Icon: TriangleAlert, tone: "text-warning" },
   critical: { label: "Critical", Icon: OctagonAlert, tone: "text-critical" },
 };
@@ -104,7 +104,7 @@ function ChartTooltip({
   const meta = STATUS_META[row.status];
 
   return (
-    <div className="min-w-44 rounded-xl border border-line bg-surface px-3 py-2.5 text-xs shadow-tile">
+    <div className="min-w-44 glass-pop rounded-xl border border-line px-3 py-2.5 text-xs">
       <p className="text-ink-muted">{formatClock(row.t)}</p>
       {row.v === null ? (
         <p className="mt-1.5 flex items-center gap-1.5 font-medium text-ink-muted">
@@ -158,7 +158,7 @@ export function HistoryChart({
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={rows} margin={{ top: 12, right: 12, bottom: 4, left: 0 }}>
         <CartesianGrid vertical={false} stroke="var(--line)" />
-        <ReferenceArea y1={bandLow} y2={bandHigh} fill="var(--ink)" fillOpacity={0.05} ifOverflow="hidden" />
+        <ReferenceArea y1={bandLow} y2={bandHigh} fill="var(--normal-solid)" fillOpacity={0.09} ifOverflow="hidden" />
         {limits.severeLow !== undefined ? (
           <ReferenceLine
             y={limits.severeLow}

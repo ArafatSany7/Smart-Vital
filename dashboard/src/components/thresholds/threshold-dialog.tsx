@@ -19,7 +19,7 @@ function SavedToast({ text, onClose }: { text: string; onClose: () => void }) {
   return (
     <div
       role="status"
-      className="flex w-[min(380px,calc(100vw-2rem))] items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-ink shadow-tile"
+      className="flex w-[min(380px,calc(100vw-2rem))] items-center gap-3 glass-pop rounded-2xl border border-line px-4 py-3 text-sm text-ink"
     >
       <Check className="size-4 text-accent" aria-hidden="true" />
       <span className="flex-1">{text}</span>
@@ -85,7 +85,7 @@ export function ThresholdDialog({ patient }: { patient: Patient }) {
       <Dialog.Portal>
         <Dialog.Backdrop
           className={cn(
-            "fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]",
+            "fixed inset-0 z-40 bg-black/45 backdrop-blur-sm",
             "transition-opacity duration-200 ease-out",
             "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 data-[ending-style]:duration-150",
           )}
@@ -93,7 +93,7 @@ export function ThresholdDialog({ patient }: { patient: Patient }) {
         <Dialog.Popup
           className={cn(
             "fixed top-1/2 left-1/2 z-50 flex max-h-[88dvh] w-[min(640px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col",
-            "rounded-2xl border border-line bg-surface shadow-tile outline-none",
+            "glass-pop rounded-2xl border border-line outline-none",
             "transition-[transform,translate,scale,opacity] duration-200 ease-out-strong",
             "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
             "data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[ending-style]:duration-150",

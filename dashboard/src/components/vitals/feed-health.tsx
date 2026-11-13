@@ -27,7 +27,9 @@ export function FeedHealthChip({
         "transition-[background-color,border-color,color] duration-300 ease-out",
         problem
           ? "border-warning-line bg-warning-soft text-warning"
-          : "border-line bg-inset text-ink-muted",
+          : paused
+            ? "border-line bg-inset text-ink-muted"
+            : "border-normal-line bg-normal-soft text-normal",
         className,
       )}
     >
@@ -38,7 +40,7 @@ export function FeedHealthChip({
       ) : health === "delayed" ? (
         <Clock className="size-3.5" aria-hidden="true" />
       ) : (
-        <StatusDot status="normal" className="text-accent" />
+        <StatusDot status="normal" />
       )}
       {paused ? "Paused" : LABEL[health]}
     </span>

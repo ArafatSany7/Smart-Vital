@@ -64,7 +64,7 @@ export function Sparkline({
         y={bandTop}
         width={WIDTH}
         height={Math.max(0, bandBottom - bandTop)}
-        className="fill-ink/[0.05]"
+        className="fill-normal-solid/10"
       />
       <path
         d={d}
@@ -73,7 +73,7 @@ export function Sparkline({
         strokeLinejoin="round"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
-        className="stroke-ink-subtle"
+        className="stroke-current opacity-80"
       />
       {last !== null && last !== undefined ? (
         <circle cx={x(lastIndex)} cy={y(last)} r={2.25} className="fill-current" />

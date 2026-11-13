@@ -7,7 +7,7 @@ import { TREND_VITALS, type TrendVital } from "@/components/charts/chart-theme";
 import { HistoryChart } from "@/components/charts/history-chart";
 import { Segmented } from "@/components/charts/segmented";
 import { Tile } from "@/components/ui/tile";
-import { usePatientFeed } from "@/hooks/use-patient-feed";
+import { usePatientData } from "@/hooks/use-patient-feed";
 import { cn } from "@/lib/cn";
 import { formatValue, VITAL_DISPLAY } from "@/lib/vitals/display";
 import { usePatientThresholds } from "@/stores/thresholds";
@@ -41,7 +41,7 @@ export function TrendsTile({
 }) {
   const [mode, setMode] = useState<Mode>("history");
   const [vital, setVital] = useState<TrendVital>("heartRate");
-  const { feed, paused } = usePatientFeed(patientId);
+  const { feed, paused } = usePatientData(patientId);
   const history = feed?.history ?? [];
   const display = VITAL_DISPLAY[vital];
   const thresholds = usePatientThresholds(patientId);
@@ -123,7 +123,7 @@ export function TrendsTile({
         ) : null}
         {mode === "history" ? (
           <>
-            <LegendItem swatch="h-3 w-4 rounded-sm bg-ink/10" label="Normal range" />
+            <LegendItem swatch="h-3 w-4 rounded-sm bg-normal-solid/25" label="Normal range" />
             <LegendItem swatch="h-0 w-4 border-t-2 border-dashed border-critical-solid" label={`Severe limit: ${severe} ${display.unit}`} />
             <LegendItem swatch="size-2 rounded-full bg-warning-solid" label="Warning reading" />
             <LegendItem swatch="size-2 rounded-full bg-critical-solid" label="Critical reading" />

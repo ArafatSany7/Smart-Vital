@@ -7,9 +7,27 @@ import { toast, Toaster } from "sonner";
 import { AlertToastCard } from "@/components/alerts/alert-toast";
 import { useCaseload } from "@/hooks/use-caseload";
 import { findPatientFor } from "@/lib/data/patients";
-import type { Alert } from "@/lib/vitals/alerts";
+import { alertState, type Alert } from "@/lib/vitals/alerts";
+import { useAlertPanel } from "@/stores/alert-panel";
 import { onAlertEvent, useAlerts } from "@/stores/alerts";
 import { useSession } from "@/stores/session";
+
+const DOCK_ID = "critical-alerts";
+const QUIET_AFTER_MS = 10_000;
+
+function pendingAlerts(queue: string[]): Alert[] {
+  const open = new Map(
+    useAlerts
+      .getState()
+      .alerts.filter((alert) => alertState(alert) === "open")
+      .map((alert) => [alert.id, alert]),
+  );
+  return queue.flatMap((id) => open.get(id) ?? []);
+}
+
+function signatureOf(pending: Alert[]): string {
+  return pending.map((alert) => `${alert.id}:${alert.escalatedAt === null ? 0 : 1}`).join("|");
+}
 
 export function AlertNotifier() {
   const router = useRouter();
@@ -19,49 +37,71 @@ export function AlertNotifier() {
   const clinicianName = clinician?.name ?? "";
 
   useEffect(() => {
-    const visible = new Set<string>();
-    const forget = (toastItem: { id: string | number }) => visible.delete(String(toastItem.id));
+    let queue: string[] = [];
+    let shown = "";
 
-    const show = (alert: Alert, duration: number) => {
-      visible.add(alert.id);
+    const hide = () => {
+      queue = [];
+      shown = "";
+    };
+
+    const render = () => {
+      const pending = pendingAlerts(queue);
+      queue = pending.map((alert) => alert.id);
+      const signature = signatureOf(pending);
+      if (signature === shown) return;
+
+      if (pending.length === 0) {
+        shown = "";
+        toast.dismiss(DOCK_ID);
+        return;
+      }
+
+      const alert = pending.find((item) => item.escalatedAt !== null) ?? pending[0];
+      const urgent = pending.some((item) => item.escalatedAt !== null);
       const patient = findPatientFor(useSession.getState().clinicianId, alert.patientId);
+      shown = signature;
+
       toast.custom(
-        (id) => (
+        () => (
           <AlertToastCard
             alert={alert}
             patient={patient}
-            onClose={() => toast.dismiss(id)}
-            onOpen={() => {
-              router.push(`/patients/${alert.patientId}`);
-            }}
-            onAcknowledge={() => {
-              useAlerts.getState().acknowledge(alert.id, clinicianName, Date.now());
-              toast.dismiss(id);
+            others={pending.length - 1}
+            onClose={() => toast.dismiss(DOCK_ID)}
+            onOpen={() => router.push(`/patients/${alert.patientId}`)}
+            onAcknowledge={() =>
+              useAlerts.getState().acknowledge(alert.id, clinicianName, Date.now())
+            }
+            onShowAll={() => {
+              toast.dismiss(DOCK_ID);
+              useAlertPanel.getState().setOpen(true);
             }}
           />
         ),
-        { id: alert.id, duration, onDismiss: forget, onAutoClose: forget },
+        {
+          id: DOCK_ID,
+          duration: urgent ? Number.POSITIVE_INFINITY : QUIET_AFTER_MS,
+          onDismiss: hide,
+          onAutoClose: hide,
+        },
       );
     };
 
     const stopEvents = onAlertEvent((event) => {
-      if (event.type === "resolved") {
-        if (visible.has(event.alert.id)) show(event.alert, 6000);
-        return;
+      if (event.type !== "resolved" && !queue.includes(event.alert.id)) {
+        queue = [event.alert.id, ...queue];
       }
-      show(event.alert, event.type === "escalated" ? Number.POSITIVE_INFINITY : 12000);
+      render();
     });
 
-    const stopAcks = useAlerts.subscribe((state, previous) => {
-      const before = new Map(previous.alerts.map((alert) => [alert.id, alert.acknowledgedAt]));
-      for (const alert of state.alerts) {
-        if (alert.acknowledgedAt !== null && before.get(alert.id) === null) toast.dismiss(alert.id);
-      }
+    const stopChanges = useAlerts.subscribe((state, previous) => {
+      if (state.alerts !== previous.alerts && queue.length > 0) render();
     });
 
     return () => {
       stopEvents();
-      stopAcks();
+      stopChanges();
       toast.dismiss();
     };
   }, [router, clinicianId, clinicianName]);
@@ -72,11 +112,11 @@ export function AlertNotifier() {
       theme={resolvedTheme === "light" ? "light" : "dark"}
       offset={{ bottom: 20, right: 20 }}
       mobileOffset={{ bottom: 16, right: 16, left: 16 }}
-      visibleToasts={3}
+      visibleToasts={2}
       gap={10}
-      containerAriaLabel="Critical alerts"
+      containerAriaLabel="Notifications"
       toastOptions={{ unstyled: true }}
-      style={{ "--width": "380px" } as React.CSSProperties}
+      style={{ "--width": "360px" } as React.CSSProperties}
     />
   );
 }

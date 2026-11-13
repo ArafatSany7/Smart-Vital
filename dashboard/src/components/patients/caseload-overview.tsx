@@ -1,6 +1,5 @@
 "use client";
 
-import NumberFlow from "@number-flow/react";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import {
@@ -8,8 +7,11 @@ import {
   ConditionChips,
   RiskBars,
 } from "@/components/patients/patient-bits";
+import { MetricNumber } from "@/components/ui/metric-number";
+import { SectionLabel } from "@/components/ui/section-label";
 import { StatusBadge, StatusDot } from "@/components/ui/status";
 import { Tile } from "@/components/ui/tile";
+import { Tilt } from "@/components/ui/tilt";
 import { useCaseload } from "@/hooks/use-caseload";
 import { useFeedClock } from "@/hooks/use-now";
 import { usePatientFeed } from "@/hooks/use-patient-feed";
@@ -40,17 +42,20 @@ function Stat({
       index={index}
       className={cn(
         "transition-[background-color,border-color] duration-300 ease-out",
-        active && tone === "critical" && "critical-ring border-critical-line bg-critical-soft",
-        active && tone === "warning" && "border-warning-line bg-warning-soft",
+        "transition-[background-color,border-color,box-shadow]",
+        active && tone === "critical" && "tile-glow-critical critical-ring border-critical-line bg-critical-soft",
+        active && tone === "warning" && "tile-glow-warning border-warning-line bg-warning-soft",
         className,
       )}
     >
       <p className="flex items-center gap-2 text-sm text-ink-muted">
-        {tone ? <StatusDot status={active ? tone : "normal"} /> : null}
+        {tone ? (
+          <StatusDot status={tone} muted={!active} />
+        ) : null}
         {label}
       </p>
-      <p className="mt-2 text-4xl font-medium text-ink">
-        <NumberFlow value={value} className="numeric" />
+      <p className="mt-2 text-4xl font-semibold">
+        <MetricNumber value={value} status={active ? tone : undefined} />
       </p>
       {note ? <p className="mt-1 text-xs text-ink-muted">{note}</p> : null}
     </Tile>
@@ -127,41 +132,43 @@ function useCardTone(patientId: string): string {
   const { feed, health, paused } = usePatientFeed(patientId);
   if (!paused && (health === "delayed" || health === "offline")) return "";
   const status = feed?.classification?.status;
-  if (status === "critical") return "critical-ring border-critical-line";
-  if (status === "warning") return "border-warning-line";
+  if (status === "critical") return "tile-glow-critical critical-ring border-critical-line";
+  if (status === "warning") return "tile-glow-warning border-warning-line";
   return "";
 }
 
 function PatientCard({ patient, index }: { patient: Patient; index: number }) {
   const tone = useCardTone(patient.id);
   return (
-    <Link
-      href={`/patients/${patient.id}`}
-      style={{ "--i": Math.min(index, 8) } as CSSProperties}
-      className={cn(
-        "tile-enter flex flex-col gap-4 rounded-tile border border-line bg-surface p-4 shadow-tile",
-        "transition-[transform,translate,scale,border-color] duration-150 ease-out-strong",
-        "hover:border-line-strong active:scale-[0.98]",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-        tone,
-      )}
-    >
-      <div className="flex items-center gap-3">
-        <Avatar name={patient.name} />
-        <div className="min-w-0 flex-1 leading-tight">
-          <p className="truncate text-sm font-medium text-ink">
-            {patient.name}
-          </p>
-          <p className="text-xs text-ink-subtle">
-            <span className="font-mono">{patient.id}</span> · {patient.age}{" "}
-            years
-          </p>
+    <Tilt>
+      <Link
+        href={`/patients/${patient.id}`}
+        style={{ "--i": Math.min(index, 8) } as CSSProperties}
+        className={cn(
+          "glass tile-enter flex h-full flex-col gap-4 rounded-tile border border-line p-4 hover:-translate-y-0.5 hover:shadow-pop",
+          "transition-[transform,translate,scale,border-color,box-shadow] duration-150 ease-out-strong",
+          "hover:border-accent/40 active:scale-[0.98]",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+          tone,
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <Avatar name={patient.name} />
+          <div className="min-w-0 flex-1 leading-tight">
+            <p className="truncate text-sm font-medium text-ink">
+              {patient.name}
+            </p>
+            <p className="text-xs text-ink-subtle">
+              <span className="font-mono">{patient.id}</span> · {patient.age}{" "}
+              years
+            </p>
+          </div>
+          <RiskBars level={patient.riskLevel} />
         </div>
-        <RiskBars level={patient.riskLevel} />
-      </div>
-      <ConditionChips conditions={patient.conditions} />
-      <PatientLive patientId={patient.id} />
-    </Link>
+        <ConditionChips conditions={patient.conditions} />
+        <PatientLive patientId={patient.id} />
+      </Link>
+    </Tilt>
   );
 }
 
@@ -172,11 +179,12 @@ export function CaseloadOverview() {
 
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">
+      <header className="tile-enter">
+        <SectionLabel index="01">Caseload</SectionLabel>
+        <h1 className="mt-4 text-4xl font-semibold tracking-[-0.03em] text-ink sm:text-5xl">
           Your patients
         </h1>
-        <p className="mt-1 text-sm text-ink-muted">
+        <p className="mt-3 max-w-xl text-base text-ink-muted">
           {patients.length} patients are assigned to {clinician.name}. You see
           only these.
         </p>

@@ -50,7 +50,7 @@ export function AlertsTile({
         {alerts.length === 0 ? (
           <p className="text-sm text-ink-muted">
             An alert is raised the moment a reading is Critical. One alert covers a whole episode,
-            and it resolves after three calm readings in a row.
+            and it resolves after three Normal readings in a row.
           </p>
         ) : (
           <ul className="space-y-2">

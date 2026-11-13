@@ -20,3 +20,12 @@ export function usePatientFeed(patientId: string): {
 export function usePatientStatus(patientId: string): Status | null {
   return useFeed((state) => state.patients[patientId]?.classification?.status ?? null);
 }
+
+export function usePatientData(patientId: string): {
+  feed: PatientFeed | undefined;
+  paused: boolean;
+} {
+  const feed = useFeed((state) => state.patients[patientId]);
+  const paused = useFeed((state) => !state.running);
+  return { feed, paused };
+}

@@ -88,7 +88,7 @@ describe("generateReading", () => {
     const rng = new Rng(4);
     const profile = profileFor("medium");
     const readings = Array.from({ length: 200 }, (_, index) =>
-      generateReading(profile, rng, index * 60_000, 1.4),
+      generateReading(profile, rng, index * 60_000, { severity: 1.4 }),
     );
     expect(share(readings, (r) => classifyReading(r).status === "critical")).toBeGreaterThan(0.6);
   });
@@ -99,7 +99,7 @@ describe("generateReading", () => {
       (() => {
         const rng = new Rng(8);
         return Array.from({ length: 300 }, (_, index) =>
-          generateReading(profile, rng, index * 60_000, 0),
+          generateReading(profile, rng, index * 60_000, {}),
         );
       })(),
     );

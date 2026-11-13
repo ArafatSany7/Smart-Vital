@@ -12,23 +12,38 @@ const STATUS_META = {
 } as const;
 
 const dotColor: Record<Status, string> = {
-  normal: "text-ink-subtle",
+  normal: "text-normal-solid",
+  warning: "text-warning-solid",
+  critical: "text-critical-solid",
+};
+
+export const statusText: Record<Status, string> = {
+  normal: "text-normal",
+  warning: "text-warning",
+  critical: "text-critical",
+};
+
+export const statusMark: Record<Status, string> = {
+  normal: "text-normal-solid",
   warning: "text-warning-solid",
   critical: "text-critical-solid",
 };
 
 export function StatusDot({
   status,
+  muted = false,
   className,
 }: {
   status: Status;
+  muted?: boolean;
   className?: string;
 }) {
   return (
     <span
       aria-hidden="true"
-      data-pulse={status === "critical"}
-      className={cn("status-dot", dotColor[status], className)}
+      data-pulse={!muted && status === "critical"}
+      data-quiet={muted}
+      className={cn("status-dot", muted ? "text-ink-subtle" : dotColor[status], className)}
     />
   );
 }
@@ -36,15 +51,15 @@ export function StatusDot({
 const badge = cva(
   [
     "inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5",
-    "text-xs font-medium whitespace-nowrap",
-    "transition-[background-color,border-color,color] duration-300 ease-out",
+    "text-xs font-semibold whitespace-nowrap",
+    "transition-[background-color,border-color,color,box-shadow] duration-300 ease-out",
   ],
   {
     variants: {
       status: {
-        normal: "border-line bg-inset text-ink-muted",
-        warning: "border-warning-line bg-warning-soft text-warning",
-        critical: "border-critical-line bg-critical-soft text-critical",
+        normal: "glow-normal border-normal-line bg-normal-soft text-normal",
+        warning: "glow-warning border-warning-line bg-warning-soft text-warning",
+        critical: "glow-critical border-critical-line bg-critical-soft text-critical",
       },
     },
   },

@@ -1,10 +1,10 @@
 "use client";
 
-import NumberFlow from "@number-flow/react";
 import { Ban, Droplet, Gauge, HeartPulse, Thermometer, Unplug, Wind } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import { Sparkline } from "@/components/vitals/sparkline";
-import { StatusBadge, StatusDot } from "@/components/ui/status";
+import { MetricNumber } from "@/components/ui/metric-number";
+import { StatusBadge, StatusDot, statusMark } from "@/components/ui/status";
 import { Tile } from "@/components/ui/tile";
 import { usePatientFeed } from "@/hooks/use-patient-feed";
 import { cn } from "@/lib/cn";
@@ -22,17 +22,11 @@ const ICONS: Record<ScoredVitalKey, ComponentType<SVGProps<SVGSVGElement>>> = {
 
 export const statusSurface: Record<Status, string> = {
   normal: "",
-  warning: "border-warning-line bg-warning-soft",
-  critical: "critical-ring border-critical-line bg-critical-soft",
+  warning: "tile-glow-warning border-warning-line bg-warning-soft",
+  critical: "tile-glow-critical critical-ring border-critical-line bg-critical-soft",
 };
 
 const SPARK_POINTS = 30;
-
-const FLOW_TIMING = { duration: 450, easing: "cubic-bezier(0.23, 1, 0.32, 1)" };
-
-function numberFormat(decimals: number) {
-  return { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
-}
 
 export function VitalTile({
   patientId,
@@ -56,7 +50,7 @@ export function VitalTile({
   const header = (status: Status | null) => (
     <header className="flex items-center justify-between gap-3">
       <h3 className="flex items-center gap-2 text-sm font-medium text-ink">
-        <Icon className="size-4 text-ink-muted" aria-hidden="true" />
+        <Icon className="size-4 text-accent" aria-hidden="true" />
         {display.label}
       </h3>
       {status ? <StatusBadge status={status} /> : null}
@@ -65,7 +59,7 @@ export function VitalTile({
 
   if (!monitored) {
     return (
-      <Tile index={index} className={cn("flex flex-col border-dashed bg-transparent shadow-none", className)}>
+      <Tile index={index} glass={false} className={cn("flex flex-col border-dashed border-line-strong", className)}>
         {header(null)}
         <p className="mt-6 text-2xl font-medium text-ink-subtle">Not monitored</p>
         <p className="mt-2 text-sm text-ink-muted">
@@ -89,7 +83,7 @@ export function VitalTile({
     <Tile
       index={index}
       className={cn(
-        "flex flex-col transition-[background-color,border-color] duration-300 ease-out",
+        "flex flex-col transition-[background-color,border-color,box-shadow] duration-300 ease-out",
         !stale && value !== null && statusSurface[status],
         className,
       )}
@@ -118,17 +112,16 @@ export function VitalTile({
           </div>
         ) : (
           <p className="flex items-baseline gap-1.5 text-ink">
-            <NumberFlow
+            <MetricNumber
               value={value}
-              format={numberFormat(display.decimals)}
-              transformTiming={FLOW_TIMING}
-              spinTiming={FLOW_TIMING}
-              className="numeric text-5xl font-medium"
+              decimals={display.decimals}
+              status={status}
+              className="text-5xl font-semibold"
             />
             {isBp && diastolic !== null ? (
               <>
                 <span className="text-3xl text-ink-subtle">/</span>
-                <NumberFlow value={diastolic} transformTiming={FLOW_TIMING} spinTiming={FLOW_TIMING} className="numeric text-3xl font-medium text-ink-muted" />
+                <span className="numeric text-3xl font-medium text-ink-muted">{diastolic}</span>
               </>
             ) : null}
             <span className="text-sm text-ink-muted">{display.unit}</span>
@@ -142,7 +135,7 @@ export function VitalTile({
           band={[limits.mildLow ?? limits.severeLow, limits.mildHigh ?? limits.severeHigh]}
           label={`${display.label}, last ${history.length} readings`}
           className={cn(
-            status === "critical" ? "text-critical-solid" : status === "warning" ? "text-warning-solid" : "text-ink-muted",
+            statusMark[status],
           )}
         />
         <div className="mt-2 flex items-center justify-between gap-2 text-xs text-ink-muted">

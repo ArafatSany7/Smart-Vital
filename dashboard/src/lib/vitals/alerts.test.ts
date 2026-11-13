@@ -5,7 +5,7 @@ import {
   dueForEscalation,
   ESCALATE_AFTER_MS,
   processReading,
-  RESOLVE_AFTER_CALM_READINGS,
+  RESOLVE_AFTER_NORMAL_READINGS,
   type Alert,
   type EpisodeTracker,
 } from "./alerts";
@@ -69,13 +69,25 @@ describe("processReading (R4 alerts)", () => {
   });
 
   it("resolves only after enough calm readings in a row", () => {
-    const calmRun = Array.from({ length: RESOLVE_AFTER_CALM_READINGS }, (_, i) => calm(10 + i));
+    const calmRun = Array.from({ length: RESOLVE_AFTER_NORMAL_READINGS }, (_, i) => calm(10 + i));
     const almost = run([critical(1), ...calmRun.slice(0, -1)]);
     expect(alertState(almost.alerts[0])).toBe("open");
 
     const done = run([critical(1), ...calmRun]);
     expect(done.events).toEqual(["raised", "resolved"]);
     expect(alertState(done.alerts[0])).toBe("resolved");
+  });
+
+  it("does not resolve while the patient is still at Warning", () => {
+    const warnings = Array.from({ length: 6 }, (_, i) => reading(10 + i, { heartRate: 110 }));
+    const { alerts, events } = run([critical(1), ...warnings]);
+    expect(events).toEqual(["raised"]);
+    expect(alertState(alerts[0])).toBe("open");
+  });
+
+  it("starts the Normal count again after a Warning", () => {
+    const { alerts } = run([critical(1), calm(2), calm(3), reading(4, { heartRate: 110 }), calm(5), calm(6)]);
+    expect(alertState(alerts[0])).toBe("open");
   });
 
   it("restarts the calm count when the patient is Critical again", () => {
@@ -91,7 +103,7 @@ describe("processReading (R4 alerts)", () => {
   });
 
   it("raises a new alert for a new episode after the last one resolved", () => {
-    const calmRun = Array.from({ length: RESOLVE_AFTER_CALM_READINGS }, (_, i) => calm(10 + i));
+    const calmRun = Array.from({ length: RESOLVE_AFTER_NORMAL_READINGS }, (_, i) => calm(10 + i));
     const { alerts, events } = run([critical(1), ...calmRun, critical(50)]);
     expect(events).toEqual(["raised", "resolved", "raised"]);
     expect(alerts).toHaveLength(2);

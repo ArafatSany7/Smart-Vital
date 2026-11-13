@@ -5,7 +5,7 @@ import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status";
 import { Tile } from "@/components/ui/tile";
-import { usePatientFeed } from "@/hooks/use-patient-feed";
+import { usePatientData } from "@/hooks/use-patient-feed";
 import { cn } from "@/lib/cn";
 import { formatClock, formatValue, VITAL_DISPLAY } from "@/lib/vitals/display";
 import type { HistoryEntry } from "@/lib/vitals/feed";
@@ -102,7 +102,7 @@ export function ReadingLog({
   index: number;
   className?: string;
 }) {
-  const { feed } = usePatientFeed(patientId);
+  const { feed } = usePatientData(patientId);
   const [shown, setShown] = useState(PAGE);
   const history = feed?.history ?? [];
   const columns: ScoredVitalKey[] = ["heartRate", "spo2", "systolicBp", "temperature", ...(diabetic ? (["glucose"] as const) : [])];

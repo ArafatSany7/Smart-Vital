@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import { getSimulationProfile } from "@/lib/data/patients";
-import { STABLE, stepDeterioration, type Deterioration } from "@/lib/vitals/deterioration";
+import {
+  calmOptions,
+  extendOrStart,
+  personalGlucose,
+  SCENARIO,
+  STABLE,
+  stepDeterioration,
+  type Deterioration,
+} from "@/lib/vitals/deterioration";
 import { applyFaults, createSensorState, type SensorState } from "@/lib/vitals/faults";
 import { emptyFeed, ingest, reclassifyLatest, type PatientFeed } from "@/lib/vitals/feed";
 import { Rng } from "@/lib/vitals/random";
@@ -19,6 +27,7 @@ interface Sensor {
   courseRng: Rng;
   state: SensorState;
   course: Deterioration;
+  glucoseMean: number;
 }
 
 const sensors = new Map<string, Sensor>();
@@ -30,7 +39,12 @@ function seedFor(patientId: string): number {
 function nextReading(sensor: Sensor, at: number): Reading {
   const step = stepDeterioration(sensor.course, sensor.profile.riskLevel, sensor.courseRng);
   sensor.course = step.state;
-  return generateReading(sensor.profile, sensor.rng, at, step.severity);
+  return generateReading(
+    sensor.profile,
+    sensor.rng,
+    at,
+    calmOptions(sensor.profile.riskLevel, step.severity, step.pattern, sensor.glucoseMean),
+  );
 }
 
 function receive(feed: PatientFeed, message: Reading, at: number, historical: boolean): PatientFeed {
@@ -49,6 +63,7 @@ interface FeedState {
   tick: (now: number) => void;
   setRunning: (running: boolean, now: number) => void;
   reclassify: (patientId: string) => void;
+  deteriorate: (patientId: string) => void;
   disconnect: () => void;
 }
 
@@ -69,9 +84,10 @@ export const useFeed = create<FeedState>()((set, get) => ({
         profile,
         rng: new Rng(seedFor(patientId)),
         faultRng: new Rng(seedFor(patientId) + 1),
-        courseRng: new Rng(seedFor(patientId) + 2),
+        courseRng: new Rng(seedFor(patientId) + 2 + Math.floor(now / 1000)),
         state: createSensorState(),
         course: STABLE,
+        glucoseMean: personalGlucose(new Rng(seedFor(patientId) + 3)),
       };
       sensors.set(patientId, sensor);
 
@@ -115,6 +131,13 @@ export const useFeed = create<FeedState>()((set, get) => ({
     set({
       patients: { ...get().patients, [patientId]: reclassifyLatest(feed, thresholdsFor(patientId)) },
     });
+  },
+
+  deteriorate: (patientId) => {
+    const sensor = sensors.get(patientId);
+    if (sensor) {
+      sensor.course = extendOrStart(sensor.course, sensor.courseRng, SCENARIO.demoSpellTicks);
+    }
   },
 
   disconnect: () => {

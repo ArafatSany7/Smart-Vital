@@ -8,6 +8,7 @@ import { button } from "@/components/ui/button";
 import { useCaseload } from "@/hooks/use-caseload";
 import { cn } from "@/lib/cn";
 import { alertState } from "@/lib/vitals/alerts";
+import { useAlertPanel } from "@/stores/alert-panel";
 import { useAlerts } from "@/stores/alerts";
 
 export function AlertBell() {
@@ -18,16 +19,18 @@ export function AlertBell() {
     .filter((alert) => alertState(alert) === "open")
     .sort((a, b) => b.startedAt - a.startedAt);
   const count = open.length;
+  const panelOpen = useAlertPanel((state) => state.open);
+  const setPanelOpen = useAlertPanel((state) => state.setOpen);
 
   return (
-    <Popover.Root>
+    <Popover.Root open={panelOpen} onOpenChange={setPanelOpen}>
       <Popover.Trigger
         aria-label={count === 0 ? "Alerts: none open" : `Alerts: ${count} open`}
         className={cn(button({ intent: "secondary", size: "icon" }), "relative")}
       >
         <Bell className="size-[18px]" aria-hidden="true" />
         {count > 0 ? (
-          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-critical-solid px-1 text-[11px] font-semibold text-white">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-critical-solid px-1 text-[11px] font-semibold text-white dark:text-canvas">
             <NumberFlow value={count} className="numeric" />
           </span>
         ) : null}
@@ -36,7 +39,7 @@ export function AlertBell() {
         <Popover.Positioner align="end" sideOffset={8} className="z-50">
           <Popover.Popup
             className={cn(
-              "w-[min(400px,calc(100vw-2rem))] rounded-2xl border border-line bg-surface p-3 shadow-tile outline-none",
+              "w-[min(400px,calc(100vw-2rem))] glass-pop rounded-2xl border border-line p-3 outline-none",
               "origin-(--transform-origin) transition-[transform,translate,scale,opacity] duration-150 ease-out-strong",
               "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
               "data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[ending-style]:duration-100",

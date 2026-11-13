@@ -11,6 +11,8 @@ import { button } from "@/components/ui/button";
 import { ReadingLog } from "@/components/charts/reading-log";
 import { TrendsTile } from "@/components/charts/trends-tile";
 import { AlertsTile } from "@/components/alerts/alerts-tile";
+import { SimulateButton } from "@/components/patients/simulate-button";
+import { SectionLabel } from "@/components/ui/section-label";
 import { ThresholdDialog } from "@/components/thresholds/threshold-dialog";
 import { Tile } from "@/components/ui/tile";
 import { ReadingStatusTile } from "@/components/vitals/reading-status-tile";
@@ -49,7 +51,7 @@ function PatientUnavailable() {
         You can only open patients who are assigned to you. Check the patient
         ID, or go back to your own patients.
       </p>
-      <Link href="/" className={button({ intent: "secondary", className: "mt-6" })}>
+      <Link href="/dashboard" className={button({ intent: "secondary", className: "mt-6" })}>
         <ArrowLeft className="size-4" aria-hidden="true" />
         Back to your patients
       </Link>
@@ -69,11 +71,19 @@ export function PatientView({ patientId }: { patientId: string }) {
       key={patient.id}
       className="grid grid-cols-1 gap-4 md:grid-cols-6 xl:grid-cols-12"
     >
+      <Link
+        href="/dashboard"
+        className="-mb-1 flex h-11 items-center gap-2 self-start rounded-xl text-sm font-medium text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:col-span-6 lg:hidden"
+      >
+        <ArrowLeft className="size-4" aria-hidden="true" />
+        All patients
+      </Link>
       <Tile index={0} className="md:col-span-6 xl:col-span-8">
         <div className="flex flex-wrap items-start gap-4">
           <Avatar name={patient.name} size="lg" />
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-balance text-ink">
+            <SectionLabel index="02">Patient</SectionLabel>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-balance text-ink">
               {patient.name}
             </h1>
             <p className="mt-0.5 text-sm text-ink-muted">
@@ -88,6 +98,7 @@ export function PatientView({ patientId }: { patientId: string }) {
             </p>
             <CustomThresholdChip patientId={patient.id} />
             <ThresholdDialog patient={patient} />
+            <SimulateButton patientId={patient.id} />
           </div>
         </div>
         <dl className="mt-6 grid gap-5 sm:grid-cols-2">

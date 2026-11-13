@@ -1,6 +1,6 @@
 export const CANVAS_COLORS = {
-  light: { primary: "#007a83", secondary: "#7c8594" },
-  dark: { primary: "#4fd1cf", secondary: "#8b94a3" },
+  light: { primary: "#2a3d33", secondary: "#8b8a78" },
+  dark: { primary: "#ece4d2", secondary: "#9b9a87" },
 } as const;
 
 export const TREND_VITALS = ["heartRate", "spo2", "systolicBp", "temperature", "glucose"] as const;

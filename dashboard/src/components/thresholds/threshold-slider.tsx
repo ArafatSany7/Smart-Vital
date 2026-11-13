@@ -15,7 +15,7 @@ import {
 } from "@/lib/vitals/threshold-editor";
 import type { ScoredVitalKey } from "@/lib/vitals/types";
 
-const ZONE_CLASS = ["bg-line-strong", "bg-warning-solid/70", "bg-critical-solid/75"];
+const ZONE_CLASS = ["bg-normal-solid/70", "bg-warning-solid/80", "bg-critical-solid/85"];
 
 function zones(vital: ScoredVitalKey, limits: VitalLimits) {
   const { min, max } = SLIDER_RANGE[vital];

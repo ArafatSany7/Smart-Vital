@@ -26,11 +26,11 @@ export function TextField({
           id={id}
           aria-invalid={invalid || undefined}
           className={cn(
-            "h-11 w-full rounded-xl border bg-surface px-3 text-base text-ink",
+            "h-11 w-full rounded-xl border bg-surface/80 px-3 text-base text-ink",
             "placeholder:text-ink-subtle",
             "transition-[border-color] duration-150 ease-out",
             "focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-accent",
-            invalid ? "border-critical-line" : "border-line-strong",
+            invalid ? "border-critical" : "border-line-control",
             trailing ? "pr-12" : null,
           )}
           {...props}

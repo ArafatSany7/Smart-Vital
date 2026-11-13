@@ -91,15 +91,15 @@ export function PatientView({ patientId }: { patientId: string }) {
               years
             </p>
           </div>
-          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
-            <p className="flex h-8 items-center gap-2 rounded-full border border-line bg-inset px-3 text-xs font-medium text-ink-muted">
-              <RiskBars level={patient.riskLevel} />
-              {RISK_LABEL[patient.riskLevel]}
-            </p>
-            <CustomThresholdChip patientId={patient.id} />
-            <ThresholdDialog patient={patient} />
-            <SimulateButton patientId={patient.id} />
-          </div>
+          <p className="ml-auto flex h-8 shrink-0 items-center gap-2 rounded-full border border-line bg-inset px-3 text-xs font-medium text-ink-muted">
+            <RiskBars level={patient.riskLevel} />
+            {RISK_LABEL[patient.riskLevel]}
+          </p>
+        </div>
+        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-line pt-4">
+          <ThresholdDialog patient={patient} />
+          <SimulateButton patientId={patient.id} />
+          <CustomThresholdChip patientId={patient.id} />
         </div>
         <dl className="mt-6 grid gap-5 sm:grid-cols-2">
           <div>

@@ -11,6 +11,7 @@ import {
   type FormEvent,
 } from "react";
 import { EcgLine } from "@/components/login/ecg-line";
+import { BACK, FORWARD } from "@/components/page-transition";
 import { Avatar } from "@/components/patients/patient-bits";
 import { Brand } from "@/components/shell/brand";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -48,7 +49,7 @@ export function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (alreadySignedIn) router.replace("/dashboard");
+    if (alreadySignedIn) router.replace("/dashboard", { transitionTypes: FORWARD });
   }, [alreadySignedIn, router]);
 
   useLayoutEffect(() => {
@@ -102,6 +103,7 @@ export function LoginScreen() {
           <div className="tile-enter" style={enter(0)}>
             <Link
               href="/"
+              transitionTypes={BACK}
               className="group mb-8 inline-flex h-9 items-center gap-2 rounded-lg text-sm text-ink-muted transition-colors duration-200 hover:text-ink"
             >
               <span aria-hidden="true" className="arrow-nudge arrow-nudge-back">←</span>

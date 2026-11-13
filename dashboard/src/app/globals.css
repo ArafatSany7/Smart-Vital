@@ -490,8 +490,62 @@ body::before {
   animation: page-out 140ms var(--ease-out-strong) both;
 }
 
-::view-transition-new(.page-out) {
-  animation: none;
+::view-transition-new(.page-in) {
+  animation: page-in 220ms var(--ease-out-strong) 80ms both;
+}
+
+::view-transition-old(.journey-out) {
+  animation: journey-out 220ms var(--ease-out-strong) both;
+}
+
+::view-transition-new(.journey-in) {
+  animation: journey-in 420ms var(--ease-out-strong) 120ms both;
+}
+
+::view-transition-old(.journey-back-out) {
+  animation: journey-back-out 220ms var(--ease-out-strong) both;
+}
+
+::view-transition-new(.journey-back-in) {
+  animation: journey-back-in 420ms var(--ease-out-strong) 120ms both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes journey-out {
+  to {
+    opacity: 0;
+    translate: 0 -28px;
+    filter: blur(4px);
+  }
+}
+
+@keyframes journey-in {
+  from {
+    opacity: 0;
+    translate: 0 36px;
+    filter: blur(6px);
+  }
+}
+
+@keyframes journey-back-out {
+  to {
+    opacity: 0;
+    translate: 0 28px;
+    filter: blur(4px);
+  }
+}
+
+@keyframes journey-back-in {
+  from {
+    opacity: 0;
+    translate: 0 -36px;
+    filter: blur(6px);
+  }
 }
 
 @keyframes page-out {

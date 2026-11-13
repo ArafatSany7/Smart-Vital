@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRef, useState, type ReactNode } from "react";
 import { Reveal, RevealWords } from "@/components/landing/reveal";
 import { SceneStage } from "@/components/landing/scene-stage";
+import { FORWARD } from "@/components/page-transition";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/cn";
 import { getClinician } from "@/lib/data/patients";
@@ -82,6 +83,7 @@ function PrimaryLink({ href, children, inverted = false }: { href: string; child
   return (
     <Link
       href={href}
+      transitionTypes={FORWARD}
       className={cn(
         "group inline-flex h-12 items-center gap-3 rounded-full px-6 text-sm font-medium",
         "transition-[transform,translate,scale,background-color,box-shadow] duration-200 ease-out-strong",
@@ -124,7 +126,7 @@ function Nav({ signedIn }: { signedIn: boolean }) {
             ["#numbers", "In numbers"],
             ["#safeguards", "Safeguards"],
           ].map(([href, label]) => (
-            <a key={href} href={href} className="transition-colors duration-200 hover:text-l-ink">
+            <a key={href} href={href} className="rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-l-clay transition-colors duration-200 hover:text-l-ink">
               {label}
             </a>
           ))}
@@ -133,6 +135,7 @@ function Nav({ signedIn }: { signedIn: boolean }) {
           <ThemeToggle />
           <Link
             href={signedIn ? "/dashboard" : "/login"}
+            transitionTypes={FORWARD}
             className="group inline-flex h-11 items-center gap-2 rounded-full border border-l-line px-4 text-sm font-medium transition-[background-color,border-color,scale] duration-200 ease-out-strong hover:border-l-ink active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-l-clay"
           >
             {signedIn ? "Open dashboard" : "Sign in"}
@@ -165,7 +168,7 @@ function Hero({ signedIn }: { signedIn: boolean }) {
             <PrimaryLink href={signedIn ? "/dashboard" : "/login"}>
               {signedIn ? "Open the dashboard" : "Sign in to the dashboard"}
             </PrimaryLink>
-            <a href="#how" className="group inline-flex h-12 items-center gap-2 px-2 text-sm font-medium text-l-muted transition-colors duration-200 hover:text-l-ink">
+            <a href="#how" className="group rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-l-clay inline-flex h-12 items-center gap-2 px-2 text-sm font-medium text-l-muted transition-colors duration-200 hover:text-l-ink">
               See how it works
               <span aria-hidden="true" className="arrow-nudge arrow-nudge-down">↓</span>
             </a>
@@ -191,7 +194,7 @@ function StoryStep({ index, step }: { index: number; step: (typeof STEPS)[number
   return (
     <div ref={ref} className="flex min-h-[90vh] items-center">
       <motion.article
-        animate={{ opacity: active ? 1 : 0.28, y: active ? 0 : 12 }}
+        animate={{ opacity: active ? 1 : 0.45, y: active ? 0 : 12 }}
         transition={{ duration: 0.5, ease: EASE_OUT }}
         className="rounded-3xl border border-l-line bg-l-raised p-7 backdrop-blur-xl sm:p-9"
       >
@@ -313,8 +316,14 @@ export function LandingPage() {
 
   return (
     <div className="landing min-h-dvh overflow-x-clip">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-l-ink focus:px-5 focus:py-3 focus:text-sm focus:font-medium focus:text-l-bg"
+      >
+        Skip to main content
+      </a>
       <Nav signedIn={signedIn} />
-      <main id="main">
+      <main id="main" tabIndex={-1} className="outline-none">
         <div ref={story} className="relative">
           <div className="absolute inset-0">
             <motion.div style={{ opacity: sceneOpacity }} className="sticky top-0 h-dvh">

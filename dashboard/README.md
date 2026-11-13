@@ -142,6 +142,13 @@ The logic that decides anything clinical (scoring, validation, alert episodes, t
 - With "reduce transparency" switched on, or in a browser without backdrop blur, glass surfaces become solid.
 - Everything works by keyboard: a skip link, arrow keys on sliders and selectors, focus kept inside the dialog and returned on close.
 - With "reduce motion" switched on in the operating system, movement is removed and only fades remain.
+- Animated headings on the landing page also exist as plain text for screen readers.
+
+## Performance
+
+- The 3D scene is about 240 KB (compressed). It downloads only on the landing page, after the page has appeared, and stops rendering whenever it is off screen.
+- Its resolution is capped at 1.5x the screen density, and it falls back to a flat drawing when WebGL is not available.
+- Page transitions use the browser's View Transitions API: moving forward (landing, sign-in, dashboard) rises upward, going back moves down, and pages inside the dashboard crossfade.
 
 ## Limitations
 

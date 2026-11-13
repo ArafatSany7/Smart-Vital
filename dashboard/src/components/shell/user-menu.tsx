@@ -3,6 +3,7 @@
 import { Menu } from "@base-ui/react/menu";
 import { ChevronDown, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { BACK } from "@/components/page-transition";
 import { Avatar } from "@/components/patients/patient-bits";
 import { useCaseload } from "@/hooks/use-caseload";
 import { cn } from "@/lib/cn";
@@ -53,7 +54,7 @@ export function UserMenu() {
             <Menu.Item
               onClick={() => {
                 signOut();
-                router.replace("/login");
+                router.replace("/login", { transitionTypes: BACK });
               }}
               className="flex h-10 cursor-pointer items-center gap-2.5 rounded-xl px-3 text-sm text-ink outline-none data-[highlighted]:bg-inset"
             >
